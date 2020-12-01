@@ -1,15 +1,13 @@
 const express = require("express");
 var cors = require("cors");
+var bodyParser = require("body-parser");
 let data = require("./data");
-const { request } = require("http");
-const { response } = require("express");
 const app = express();
 const port = process.env.PORT || 3002;
 
 //middlewares
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.listen(port, () => {
   console.log("Image Quiz API listening at port " + port);
@@ -26,8 +24,22 @@ app.get("/quizzes", (request, response) => {
   response.json(metadata);
 });
 
+app.get("/questions/:quizid", (request, response) => {
+  let quizid = request.params.quizid;
+  let found = data.quizes.find((x) => x.id === Number(quizid));
+  if (found) {
+    response.json(found.questions);
+  } else {
+    response
+      .status(404)
+      .json({ error: `Quiz with id ${quizid} does not exist` });
+  }
+});
+
 app.post("/score", (request, response) => {
-  let score = request.body;
-  data.scores.push(score);
-  response.json({ message: "The score saved successfully." });
+  let username = request.body.username;
+  let quizid = request.body.quizid;
+  let score = request.body.score;
+  data.scores.push({ score: score, quizid: quizid, username: username });
+  response.json({ messsage: "The score was added successfully" });
 });
