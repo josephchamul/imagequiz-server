@@ -21,6 +21,7 @@ app.post("/score", (request, response) => {
   response.json({ message: "The score saved successfully." });
 });
 
+
 app.listen(port, () => {
   console.log("server app listening at port " + port);
 });
